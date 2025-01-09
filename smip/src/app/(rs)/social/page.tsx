@@ -1,5 +1,5 @@
 export const metadata = {
-    title: "Page not found"
+    title: "Social"
 }
 
 export default function Social(){
