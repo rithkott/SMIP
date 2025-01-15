@@ -1,0 +1,6 @@
+backend API is fine. figure out how to send proper json requests from
+frontend because its balls I hate TS
+
+For now going to register people manually and check everytime
+they visit a certain page.
+When deployed I can do this with webhooks from Kinde on registration
