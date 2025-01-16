@@ -10,9 +10,9 @@ api = Api(app)
 class UserModel(db.Model): 
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False, primary_key=True)
-
+    credits = db.Column(db.Integer, unique=False, nullable=False, default=0)
     def __repr__(self): 
-        return f"User(username = {self.username}, email = {self.email})"
+        return f"User(username = {self.username}, email = {self.email}, credits = {self.credits})"
 
 user_args = reqparse.RequestParser()
 user_args.add_argument('username', type=str, required=True, help="Username cannot be blank")
@@ -21,6 +21,7 @@ user_args.add_argument('email', type=str, required=True, help="Email cannot be b
 userFields = {
     'username':fields.String,
     'email':fields.String,
+    'credits':fields.Integer
 }
 
 class Users(Resource):
@@ -33,10 +34,15 @@ class Users(Resource):
     def post(self):
         args = user_args.parse_args()
         user = UserModel(username=args["username"], email=args["email"])
-        db.session.add(user) 
-        db.session.commit()
-        users = UserModel.query.all()
-        return users, 201
+        db.session.add(user)
+        try: 
+            db.session.commit()
+            users = UserModel.query.all()
+            return users, 201
+        except Exception:
+            db.session.rollback()
+            abort(400, message="User already exists")
+        
     
 class User(Resource):
     @marshal_with(userFields)
@@ -54,6 +60,7 @@ class User(Resource):
             abort(404, message="User not found")
         user.username = args["username"]
         user.email = args["email"]
+        user.credits = args["credits"]
         db.session.commit()
         return user 
     
