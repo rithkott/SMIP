@@ -6,14 +6,8 @@ import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { Button } from '@/components/ui/button';
 import {getKindeServerSession} from "@kinde-oss/kinde-auth-nextjs/server";
 
-export async function Header(){
-    const {getUser} = getKindeServerSession();
-    const user = await getUser();
-    const emailvar = user["email"]
-    const url = `http://127.0.0.1:5000/api/users/${emailvar}`
-    const response = await fetch(url)
-    const data = await response.json()
-    const credits = data['credits']
+export function Header(){
+    
     return (
         <header className="bg-background h-12 p-2 border-b sticky top-0 z-20">
             <div className="flex h-8 items-center justify-between w-full">
@@ -29,7 +23,7 @@ export async function Header(){
                 <div className="flex items-center space-x-0.5">
                     <Wallet2 />
                     <h1 className="hidden sm:block text-l font-bold m-0 mt-1">
-                        {credits}
+                        {getUserCredits()}
                     </h1>
                     <NavButton href="/mytrades" label="MyTrades" icon={ChartLineIcon} />
                     <NavButton href="/social" label="Social" icon={UsersRound} />
@@ -53,4 +47,14 @@ export async function Header(){
             </div>
         </header>
     )
+}
+
+async function getUserCredits() {
+    const {getUser} = getKindeServerSession();
+    const user = await getUser();
+    const emailvar = user["email"]
+    const url = `http://127.0.0.1:5000/api/users/${emailvar}`
+    const response = await fetch(url)
+    const data = await response.json()
+    return data['credits']
 }
