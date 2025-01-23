@@ -92,6 +92,7 @@ class TradeModel(db.Model):
     likes_initial = db.Column(db.Integer, nullable=False)
     likes_final = db.Column(db.Integer, nullable=True)
     followers = db.Column(db.Integer, nullable=True)
+    multiplier = db.Column(db.Float, nullable=True)
     video_link = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
@@ -107,6 +108,7 @@ class TradeModel(db.Model):
                 likes_initial = {self.likes_initial}
                 likes_final = {self.likes_final}
                 followers = {self.followers}
+                multiplier = {self.multiplier}
                 video_link = {self.video_link}
                 )
         '''
@@ -114,7 +116,6 @@ class TradeModel(db.Model):
 
 trade_args = reqparse.RequestParser()
 trade_args.add_argument('user_id', type=int, required=True, help="User ID Required")
-trade_args.add_argument('ongoing', type=bool, required=True, help="Ongoing Status Required")
 trade_args.add_argument('initial_amount', type=int, required=True, help="Amount Required")
 trade_args.add_argument('video_link', type=str, required=True, help="Video Link Required")
 
@@ -129,6 +130,7 @@ tradeFields = {
     'likes_initial': fields.Integer,
     'likes_final': fields.Integer,
     'followers': fields.Integer,
+    'multiplier': fields.Float,
     'video_link': fields.String
 }
 
@@ -150,7 +152,8 @@ class Trade(Resource):
         trade.ongoing=False
         trade.datetime_ended = datetime.now(ZoneInfo('UTC'))
         trade.likes_final = asyncio.run(tiktok_algo.get_likes(trade.video_link))
-        trade.final_amount = trade.initial_amount + (trade.initial_amount * tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers))
+        trade.multiplier = tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers)
+        trade.final_amount = trade.initial_amount + (trade.initial_amount * trade.multiplier)
 
         db.session.commit()
         return trade
