@@ -83,13 +83,13 @@ class User(Resource):
 
 class TradeModel(db.Model):
     trade_id = db.Column(db.Integer, primary_key=True)
-    ongoing = db.Column(db.Boolean, primary_key=True)
+    ongoing = db.Column(db.Boolean, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     initial_amount = db.Column(db.Integer, nullable=False)
     final_amount = db.Column(db.Integer, nullable=True)
     datetime_started = db.Column(db.String(30), nullable=False)
     datetime_ended = db.Column(db.String(30), nullable=True)
-    likes_inital = db.Column(db.Integer, nullable=False)
+    likes_initial = db.Column(db.Integer, nullable=False)
     likes_final = db.Column(db.Integer, nullable=True)
     followers = db.Column(db.Integer, nullable=True)
     video_link = db.Column(db.String(200), nullable=False)
@@ -104,7 +104,7 @@ class TradeModel(db.Model):
                 final_amount = {self.final_amount}
                 datetime_started = {self.datetime_started}
                 datetime_ended = {self.datetime_ended}
-                likes_inital = {self.likes_inital}
+                likes_initial = {self.likes_initial}
                 likes_final = {self.likes_final}
                 followers = {self.followers}
                 video_link = {self.video_link}
@@ -126,7 +126,7 @@ tradeFields = {
     'final_amount': fields.Integer,
     'datetime_started': fields.String,
     'datetime_ended': fields.String,
-    'likes_inital': fields.Integer,
+    'likes_initial': fields.Integer,
     'likes_final': fields.Integer,
     'followers': fields.Integer,
     'video_link': fields.String
@@ -142,7 +142,6 @@ class Trade(Resource):
 
     @marshal_with(tradeFields)
     def patch(self, trade_id):
-        args = trade_args.parse_args()
         trade = TradeModel.query.filter_by(trade_id=trade_id).first()
         if not trade:
             abort(404, message="Trade not found")
@@ -151,7 +150,7 @@ class Trade(Resource):
         trade.ongoing=False
         trade.datetime_ended = datetime.now(ZoneInfo('UTC'))
         trade.likes_final = asyncio.run(tiktok_algo.get_likes(trade.video_link))
-        trade.final_amount = trade.initial_amount * tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers)
+        trade.final_amount = trade.initial_amount + (trade.initial_amount * tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers))
 
         db.session.commit()
         return trade
@@ -174,13 +173,13 @@ class Trades(Resource):
     @marshal_with(tradeFields)
     def post(self):
         args = trade_args.parse_args()  # Parse the input arguments
-        likes_current, followers_current = asyncio.run(tiktok_algo.get_likes_and_followers(trade.video_link))
+        likes_current, followers_current = asyncio.run(tiktok_algo.get_likes_and_followers(args['video_link']))
         trade = TradeModel(
             user_id=args['user_id'],
-            initial_amount=args['amount'],
+            initial_amount=args['initial_amount'],
             ongoing=True,
             datetime_started=datetime.now(ZoneInfo('UTC')),
-            likes_inital=likes_current,
+            likes_initial=likes_current,
             followers=followers_current,
             video_link=args['video_link']
         )
