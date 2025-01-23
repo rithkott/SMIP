@@ -1,3 +1,5 @@
+#This is only a test for now. Support for Reddit and Youtube videos is planned in the future
+
 import praw
 from dotenv import load_dotenv
 import os
@@ -10,5 +12,5 @@ reddit = praw.Reddit(
     user_agent=os.getenv("REDDIT_USER_AGENT"),
 )
 
-post = reddit.submission(url='https://www.reddit.com/r/What/comments/1i2ioik/what_is_the_reasoning_for_doing_this/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button')
+post = reddit.submission(url='')
 print(post.score)

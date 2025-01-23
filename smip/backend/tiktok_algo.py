@@ -25,15 +25,9 @@ async def get_likes_and_followers(url):
 log_base = 10
 
 def reward_algo_net(likes_initial, likes_final, followers):
-    payout = (math.log((likes_final**2)/(likes_initial*followers), log_base))
+    payout = (math.log(likes_final, log_base) - math.log(likes_initial, log_base))/(math.log(followers, log_base)) - 0.1
     return payout
 
-
-likes_initial = 30000
-likes_final = 50000
-followers = 35000
-
-print(reward_algo_net(likes_initial, likes_final, followers))
 
 
 
