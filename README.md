@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Welcome to **SMIP**, a game where you can literally invest in your favorite TikTok videos.
 
-## Getting Started
+This is a personal project made in NextJS, React, and a Python Backend.
 
-First, run the development server:
+Feel free to make a pull request to add to this project.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+***How To Use***
+1. Create an account on SMIP and explore the app
+2. Find a TikTok video that you think will go up significantly in likes 
+3. Hit share, copy the video link, and paste it into SMIP under the Trades tab.
+4. Specify the amount you would like to buy and place your investment
+5. Return to the investment after some time to check the change in likes and your return
+6. Sell it to liquidate your money and make more investments
+7. Try to make it to the top of the leaderboards!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  - You can and will lose money on bad investments (videos that don't go up enough in likes)
+  - I suggest diversifying, this is inspired by stock simulators so treating it like the stock market is good advice
+  - Everyone starts with 100k, but if you lose it all there is no way to earn more. Your account will be unusable.
+  - Returns are generated with a logarithmic equation that takes into account initial likes and followers. Videos that already have many likes and videos posted by popular accounts are likely to have lower returns.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
