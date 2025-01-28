@@ -6,7 +6,7 @@ Feel free to make a pull request to add to this project.
 
 
 ***How To Use***
-1. Create an account on SMIP and explore the app
+1. Create an account on SMIP and explore the site
 2. Find a TikTok video that you think will go up significantly in likes 
 3. Hit share, copy the video link, and paste it into SMIP under the Trades tab.
 4. Specify the amount you would like to buy and place your investment
