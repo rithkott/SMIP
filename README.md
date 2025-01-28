@@ -14,10 +14,10 @@ Feel free to make a pull request to add to this project.
 6. Sell it to liquidate your money and make more investments
 7. Try to make it to the top of the leaderboards!
 
-'''
-  - You can and will lose money on bad investments (videos that don't go up enough in likes)
-  - I suggest diversifying, this is inspired by stock simulators so treating it like the stock market is good advice
-  - Everyone starts with 100k, but if you lose it all there is no way to earn more. Your account will be unusable.
-  - Returns are generated with a logarithmic equation that takes into account initial likes and followers. Videos that already have many likes and videos posted by popular accounts are likely to have lower returns.
-'''
+
+> - You can and will lose money on bad investments (videos that don't go up enough in likes)
+> - I suggest diversifying, this is inspired by stock simulators so treating it like the stock market is good advice
+> - Everyone starts with 100k, but if you lose it all there is no way to earn more. Your account will be unusable.
+> - Returns are generated with a logarithmic equation that takes into account initial likes and followers. Videos that already have many likes and videos posted by popular accounts are likely to have lower returns.
+
 
