@@ -1,4 +1,4 @@
-Welcome to **SMIP**, a game where you can literally invest in your favorite TikTok videos.
+### Welcome to **SMIP**, a game where you can literally invest in your favorite TikTok videos.
 
 This is a personal project made in NextJS, React, and Python.
 
