@@ -1,15 +1,21 @@
 from flask import Flask 
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
+from trading import make_trade, update_trade
 import tiktok_algo
 import asyncio
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from redis import Redis
+from rq import Queue
 
 app = Flask(__name__) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app) 
 api = Api(app)
+
+redis = Redis(host='localhost', port=6379, db=0) #Background Queue
+queue = Queue(connection=redis)
 
 class UserModel(db.Model): 
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -147,15 +153,9 @@ class Trade(Resource):
         trade = TradeModel.query.filter_by(trade_id=trade_id).first()
         if not trade:
             abort(404, message="Trade not found")
-        
-        # Update the trade fields
-        trade.ongoing=False
-        trade.datetime_ended = datetime.now(ZoneInfo('UTC'))
-        trade.likes_final = asyncio.run(tiktok_algo.get_likes(trade.video_link))
-        trade.multiplier = tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers)
-        trade.final_amount = trade.initial_amount + (trade.initial_amount * trade.multiplier)
 
-        db.session.commit()
+        job = queue.enqueue(update_trade, trade)
+
         return trade
 
     @marshal_with(tradeFields)
@@ -176,20 +176,14 @@ class Trades(Resource):
     @marshal_with(tradeFields)
     def post(self):
         args = trade_args.parse_args()  # Parse the input arguments
-        likes_current, followers_current = asyncio.run(tiktok_algo.get_likes_and_followers(args['video_link']))
-        trade = TradeModel(
-            user_id=args['user_id'],
-            initial_amount=args['initial_amount'],
-            ongoing=True,
-            datetime_started=datetime.now(ZoneInfo('UTC')),
-            likes_initial=likes_current,
-            followers=followers_current,
-            video_link=args['video_link']
-        )
-        db.session.add(trade)
-        db.session.commit()
-        return trade, 201
-    
+        
+        job = queue.enqueue(make_trade, args)
+
+        if queue.count < 20:
+            return f"We got your trade (ID:{job.get_id()}), please allow some time to process and refresh.", 202
+        else:
+            return f"We got your trade (ID:{job.get_id()}), we are currently experiencing high traffic, please come back in a few minutes to verify.", 202
+
 api.add_resource(Users, '/api/users/')
 api.add_resource(User, '/api/users/<string:email>')
 api.add_resource(Trades, '/api/trades/')
