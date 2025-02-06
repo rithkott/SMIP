@@ -31,6 +31,10 @@ def update_trade(trade):
             trade.multiplier = tiktok_algo.reward_algo_net(trade.likes_initial, trade.likes_final, trade.followers)
             trade.final_amount = trade.initial_amount + (trade.initial_amount * trade.multiplier)
             trade.datetime_ended = datetime.now(ZoneInfo('UTC'))
+
+            db.session.add(trade)
             db.session.commit()
+            print("Trade updated successfully!")
         except Exception as e:
+            db.session.rollback() 
             print(f"Error updating trade: {e}")

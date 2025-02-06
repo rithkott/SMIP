@@ -1,7 +1,8 @@
-from flask import Flask 
+from flask import Flask
+from flask import Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
-from trading import make_trade, update_trade
+import trading
 from models import app, db, api, TradeModel
 import tiktok_algo
 import asyncio
@@ -39,7 +40,7 @@ class Users(Resource):
     @marshal_with(userFields)
     def post(self):
         args = user_args.parse_args()
-        user = UserModel(username=args["username"], email=args["email"])
+        user = UserModel(username=args["username"], email=args["email"], credits=0)
         db.session.add(user)
         try: 
             db.session.commit()
@@ -117,7 +118,7 @@ class Trade(Resource):
         if not trade:
             abort(404, message="Trade not found")
 
-        job = queue.enqueue(update_trade, trade)
+        job = queue.enqueue(trading.update_trade, trade)
 
         return trade
 
@@ -140,13 +141,15 @@ class Trades(Resource):
     def post(self):
         args = trade_args.parse_args()  # Parse the input arguments
         
-        job = queue.enqueue(make_trade, args)
+        job = queue.enqueue(trading.make_trade, args)
 
         if queue.count < 20:
-            return f"We got your trade (ID:{job.get_id()}), please allow some time to process and refresh.", 202
+            message = f"We got your trade (ID:{job.get_id()}), please allow some time to process and refresh.", 202
         else:
-            return f"We got your trade (ID:{job.get_id()}), we are currently experiencing high traffic, please come back in a few minutes to verify.", 202
+            message = f"We got your trade (ID:{job.get_id()}), we are currently experiencing high traffic, please come back in a few minutes to verify.", 202
 
+        return Response(message, status=202, mimetype='text/plain')
+    
 api.add_resource(Users, '/api/users/')
 api.add_resource(User, '/api/users/<string:email>')
 api.add_resource(Trades, '/api/trades/')
